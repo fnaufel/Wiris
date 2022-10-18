@@ -19,98 +19,107 @@
     # Converter para expressão
     eqgeral = expression(eqgeralstr)
 
-    # Determinar tipo
+    # Converter para cônica
     curva = conic(eqgeral)
-    exc = eccentricity(curva)
-    if exc = 0 then 
-      tipo = "circulo"
-    else_if exc = 1 then
-      tipo = "parabola"
-    else_if exc < 1 then
-      tipo = "elipse"
-    else
-      tipo = "hiperbole"
-    end
 
-    # Soluções
+    # Recebe uma CONICA e retorna lista de dois elementos: lhs e rhs
+    canonica(curva) := begin
+      local tipo, centro, h, k, r, foco, vertice, p, a, b, lhs, rhs
 
-    if tipo = "circulo" then
-      centro = center(curva)
-      h = centro.1
-      k = centro.2
-      r = radius(curva)
-      lhs = (x - h)^2 + (y - k)^2
-      rhs = r^2
-    end
+      tipo = achartipo(curva)
 
-    if tipo = "parabola" then
-      foco = focus(curva)
-      vertice = vertex(curva)
-      p = distance(foco, vertice)
-      h = vertice.1
-      k = vertice.2
-      if h = foco.1 then # eixo vertical
-        lhs = y - k
-        rhs = 1/(4*p) * (x - h)^2
-      else # eixo horizontal
-        lhs = x - h
-        rhs = 1/(4*p) * (y - k)^2
+      if tipo = "circulo" then
+        centro = center(curva)
+        h = centro.1
+        k = centro.2
+        r = radius(curva)
+        lhs = (x - h)^2 + (y - k)^2
+        rhs = r^2
       end
+
+      if tipo = "parabola" then
+        foco = focus(curva)
+        vertice = vertex(curva)
+        p = distance(foco, vertice)
+        h = vertice.1
+        k = vertice.2
+        if h = foco.1 then # eixo vertical
+          lhs = y - k
+          rhs = 1/(4*p) * (x - h)^2
+        else # eixo horizontal
+          lhs = x - h
+          rhs = 1/(4*p) * (y - k)^2
+        end
+      end
+
+      if tipo = "elipse" then
+        centro = center(curva)
+        h = centro.1
+        k = centro.2
+        a = semimajor_axis(curva)
+        b = semiminor_axis(curva)
+        foco = focus(curva).1
+        if h = foco.1 then # eixo maior vertical
+          lhs = (x - h)^2 / b^2 + (y - k)^2 / a^2
+        else # eixo maior horizontal
+          lhs = (x - h)^2 / a^2 + (y - k)^2 / b^2
+        end
+        rhs = 1
+      end
+
+      if tipo = "hiperbole" then
+        centro = center(curva)
+        h = centro.1
+        k = centro.2
+        a = semimajor_axis(curva)
+        b = semiminor_axis(curva)
+        foco = focus(curva).1
+        if h = foco.1 then # eixo real vertical
+          lhs = -(x - h)^2 / b^2 + (y - k)^2 / a^2
+        else # eixo real horizontal
+          lhs = (x - h)^2 / a^2 - (y - k)^2 / b^2
+        end
+        rhs = 1
+      end
+
+      return {lhs, rhs}
+
     end
 
-    if tipo = "elipse" then
-      centro = center(curva)
-      h = centro.1
-      k = centro.2
-      a = semimajor_axis(curva)
-      b = semiminor_axis(curva)
-      foco = focus(curva).1
-      if h = foco.1 then # eixo maior vertical
-        lhs = (x - h)^2 / b^2 + (y - k)^2 / a^2
-      else # eixo maior horizontal
-        lhs = (x - h)^2 / a^2 + (y - k)^2 / b^2
-      end
-      rhs = 1
-    end
-
-    if tipo = "hiperbole" then
-      centro = center(curva)
-      h = centro.1
-      k = centro.2
-      a = semimajor_axis(curva)
-      b = semiminor_axis(curva)
-      foco = focus(curva).1
-      if h = foco.1 then # eixo real vertical
-        lhs = -(x - h)^2 / b^2 + (y - k)^2 / a^2
-      else # eixo real horizontal
-        lhs = (x - h)^2 / a^2 - (y - k)^2 / b^2
-      end
-      rhs = 1
-    end
+    resposta = canonica(curva)
+    lhs = resposta.1
+    rhs = resposta.2
   #+end_src
   
 * Determinar tipo (não-degenerada)
 
   #+begin_src python
-
-    # Determinar tipo
-    curva = conic(eqgeral)
-    exc = eccentricity(curva)
-    if exc = 0 then 
-      tipo = 1
-    else_if exc = 1 then
-      tipo = 3
-    else_if exc < 1 then
-      tipo = 2
-    else
-      tipo = 4
+    # Determinar tipo usando excentricidade
+    # Só vale para não-degenerada???
+    # Recebe uma CONICA e retorna string
+    achartipo(curva) := begin
+      local exc, tipo
+      exc = eccentricity(curva)
+      if exc = 0 then 
+        tipo = "circulo"
+      else_if exc = 1 then
+        tipo = "parabola"
+      else_if exc < 1 then
+        tipo = "elipse"
+      else
+        tipo = "hiperbole"
+      end
+      return tipo
     end
 
-    # Tipos
-    tipos = {"Um círculo", "Uma elipse", "Uma parábola", "Uma hipérbole"}
-    correta = tipos.tipo
 
-    incorretas = {tipos.i with i in 1..length(tipos) where tipos.i != correta}
+    # Tipos para questão de múltipla escolha
+    tipos = {"circulo", "elipse", "parabola", "hiperbole"}
+    tipostxt = {"Um círculo", "Uma elipse", "Uma parábola", "Uma hipérbole"}
+
+    correta = tipostxt.(index(tipos, achartipo(curva)))
+
+    incorretas = {tipostxt.i with i in 1..length(tipostxt) where tipostxt.i != correta}
     incorreta1 = incorretas.1
     incorreta2 = incorretas.2
     incorreta3 = incorretas.3
