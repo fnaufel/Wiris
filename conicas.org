@@ -1,0 +1,236 @@
+
+* STARTED Transformar tudo em funções
+  :LOGBOOK:
+  CLOCK: [2022-10-18 Tue 13:02]
+  - State "STARTED"    from "TODO"       [2022-10-18 Tue 13:02]
+  :END:
+
+* Converter de geral para canônica
+
+  #+begin_src python
+    # Cônicas
+    eqsgeraisstr = {"2x^2+y^2-4x+5y-1", "x^2+2y^2-5x-5y+1", "-4x^2-2y^2-5x+y+1", "-x^2-y^2-4x+y+5", "-3x^2-5y^2+3x-2y", "5x^2+5y^2-5y", "-x^2-2y^2+4x+2y+5", "-2x^2-5y^2+y+4", "-x^2-y^2-4x-3y+4", "-2x^2-4y^2+3x+3y+1", "-5x^2-y^2-x-4y+2", "-5x^2-2y^2+4x+4y-1", "-4x^2-5y^2-2x+2y+2", "-3x^2-y^2-x+4y", "-5x^2-5y^2-5x+2", "x^2+5y^2-4x+y+1", "5x^2+2y^2-4x+4y-1", "-5x^2-y^2+5x-2y+5", "-x^2-3y^2+2x+5y+1", "-x^2-5y^2-2x-5y+3", "5x^2+3y^2-x+5y", "5x^2+y^2+3y-1", "3x^2+5y^2-4x+4y+2", "4x^2+2y^2-2x+y-5", "x^2+2y^2-x-5y+1", "2x^2+y^2+4x+4y-1", "2x^2+y^2+2x", "-4x^2+y^2-4x+5y+4", "-2x^2+2y^2+5x-4y+2", "5x^2-2y^2+4x-4y", "-3x^2+y^2-2x+4y+3", "-3x^2+2y^2-3x-3y-3", "-5x^2+3y^2+3x+3y-4", "-5x^2+3y^2-x+2y-5", "-4x^2+5y^2+x-y-1", "5x^2-3y^2-5x+4y+2", "5x^2-y^2+3x+5y-2", "-x^2+2y^2-5x-2y-2", "4x^2-4y^2-x-y+1", "2x^2-2y^2+3x+2", "-2x^2+4y^2+4x-5y-4", "5x^2-2y^2+2x+2y+2", "-x^2+y^2+3x-4", "-2x^2+4y^2-2x+3y+5", "-4x^2+5y^2+5x", "-3x^2+5y^2-4x+4y-2", "-x^2+4y^2+5x-4y-1", "-2x^2+2y^2-4x-3y-5", "-4x^2+2y^2+3x-3y-1", "-3x^2+3y^2-2x-4", "-5x^2+2y^2-2x-3y+2", "-2x^2+2y^2-3y+2", "-2x^2+5y^2-5x+3y+1", "5x^2-2y^2-x-5y-2", "-5y^2+2x+5", "-y^2-2x-2y+1", "4x^2-x+2y+1", "-3y^2+2x+3", "-x^2-4x-2y-4", "-3y^2+2x+5y-2", "y^2+5x+3y+1", "-4y^2-2x-2y", "4x^2-4x+y-5", "2y^2-3x+4y", "-2y^2+x+3y-1", "4x^2-x-3y+5", "-x^2+3x+3y-2", "3y^2-3x-4y", "3y^2+2x+y+1", "-2x^2-5x+2y-3", "-2y^2-3x+y+3", "-3x^2+2x-4y-3", "-4x^2-5x+2y+2", "-2x^2+3x+4y-5", "2x^2-x-y+3", "y^2-x-y-1", "x^2+5x+2y-3", "-5x^2+2y", "-5x^2-5x-2y+2", "-x^2+3x+5y-4"}
+
+    # Sortear equação string
+    total = 80 #length(eqsgeraisstr)
+    n = random(1..total)
+    eqgeralstr = eqsgeraisstr.n
+
+    # Converter para expressão
+    eqgeral = expression(eqgeralstr)
+
+    # Determinar tipo
+    curva = conic(eqgeral)
+    exc = eccentricity(curva)
+    if exc = 0 then 
+      tipo = "circulo"
+    else_if exc = 1 then
+      tipo = "parabola"
+    else_if exc < 1 then
+      tipo = "elipse"
+    else
+      tipo = "hiperbole"
+    end
+
+    # Soluções
+
+    if tipo = "circulo" then
+      centro = center(curva)
+      h = centro.1
+      k = centro.2
+      r = radius(curva)
+      lhs = (x - h)^2 + (y - k)^2
+      rhs = r^2
+    end
+
+    if tipo = "parabola" then
+      foco = focus(curva)
+      vertice = vertex(curva)
+      p = distance(foco, vertice)
+      h = vertice.1
+      k = vertice.2
+      if h = foco.1 then # eixo vertical
+        lhs = y - k
+        rhs = 1/(4*p) * (x - h)^2
+      else # eixo horizontal
+        lhs = x - h
+        rhs = 1/(4*p) * (y - k)^2
+      end
+    end
+
+    if tipo = "elipse" then
+      centro = center(curva)
+      h = centro.1
+      k = centro.2
+      a = semimajor_axis(curva)
+      b = semiminor_axis(curva)
+      foco = focus(curva).1
+      if h = foco.1 then # eixo maior vertical
+        lhs = (x - h)^2 / b^2 + (y - k)^2 / a^2
+      else # eixo maior horizontal
+        lhs = (x - h)^2 / a^2 + (y - k)^2 / b^2
+      end
+      rhs = 1
+    end
+
+    if tipo = "hiperbole" then
+      centro = center(curva)
+      h = centro.1
+      k = centro.2
+      a = semimajor_axis(curva)
+      b = semiminor_axis(curva)
+      foco = focus(curva).1
+      if h = foco.1 then # eixo real vertical
+        lhs = -(x - h)^2 / b^2 + (y - k)^2 / a^2
+      else # eixo real horizontal
+        lhs = (x - h)^2 / a^2 - (y - k)^2 / b^2
+      end
+      rhs = 1
+    end
+  #+end_src
+  
+* Determinar tipo (não-degenerada)
+
+  #+begin_src python
+
+    # Determinar tipo
+    curva = conic(eqgeral)
+    exc = eccentricity(curva)
+    if exc = 0 then 
+      tipo = 1
+    else_if exc = 1 then
+      tipo = 3
+    else_if exc < 1 then
+      tipo = 2
+    else
+      tipo = 4
+    end
+
+    # Tipos
+    tipos = {"Um círculo", "Uma elipse", "Uma parábola", "Uma hipérbole"}
+    correta = tipos.tipo
+
+    incorretas = {tipos.i with i in 1..length(tipos) where tipos.i != correta}
+    incorreta1 = incorretas.1
+    incorreta2 = incorretas.2
+    incorreta3 = incorretas.3
+  #+end_src
+  
+* Achar centro
+
+  #+begin_src python
+    if tipo = "parabola" then
+      resposta = {}
+    else
+      resposta = {center(curva)}
+    end
+
+    respostastr = point2Dlisttolatex(resposta)
+  #+end_src
+  
+* Achar vértices (só eixos paralelos a Ox ou Oy)
+
+  #+begin_src python
+    # SOMENTE para cônicas com eixos paralelos a Ox ou Oy
+
+    if tipo = "circulo" then
+      resposta = {}
+    else_if tipo = "parabola" then
+      resposta = { vertex(curva) }
+    else_if tipo = "ellipse" then
+      resposta = { point(curva, angulo) with angulo in { 0, Pi_/2, Pi_, 3*Pi_/4 } }
+    else
+      resposta = { point(curva, angulo) with angulo in { 0, Pi_ } }
+    end
+
+    respostastr = point2Dlisttolatex(resposta)
+  #+end_src
+
+* Achar focos
+
+  #+begin_src python
+    if tipo = "circulo" then
+      resposta = {}
+    else_if tipo = "parabola" then
+      resposta = { focus(curva) }
+    else
+      resposta = focus(curva)
+    end
+
+    respostastr = point2Dlisttolatex(resposta)
+  #+end_src
+  
+* Achar excentricidade
+
+  #+begin_src python
+    # Determinar tipo
+    curva = conic(eqgeral)
+    exc = eccentricity(curva)
+    if exc = 0 then
+      tipo = "circulo"
+    else_if exc = 1 then
+      tipo = "parabola"
+    else_if exc < 1 then
+      tipo = "elipse"
+    else
+      tipo = "hiperbole"
+    end
+
+    resposta = exc
+    respostastr = latex(resposta)
+  #+end_src
+
+* Achar diretriz (só parábola, eixo vertical ou horizontal)
+
+  #+begin_src python
+    if tipo = "parabola" then
+      foco = focus(curva)
+      vertice = vertex(curva)
+      p = distance(foco, vertice)
+      h = vertice.1
+      k = vertice.2
+      if h = foco.1 then # eixo vertical
+        lhs = y
+        if k < foco.2 then # concavidade p cima
+          rhs = k - p
+        else # concavidade p baixo
+          rhs = k + p
+        end
+      else  # eixo horizontal
+        lhs = x
+        if h < foco.1 then # concavidade p dir
+          rhs = h - p
+        else # concavidade p esq
+          rhs = k + p
+        end
+      end
+    else
+      lhs = 0
+      rhs = 0
+    end
+  #+end_src
+
+* Achar assíntotas (só eixo vertical ou horizontal)
+
+  #+begin_src python
+    if tipo = "hiperbole" then
+      a = semimajor_axis(curva)
+      b = semiminor_axis(curva)
+      centro = center(curva)
+      h = centro.1
+      k = centro.2
+      foco = focus(curva).1
+      if h = foco.1 then # eixo real vertical
+        ass1 = -(a/b) * (x - h) + k
+        ass2 = (a/b) * (x - h) + k
+      else  # eixo real horizontal
+        ass1 = -(b/a) * (x - h) + k
+        ass2 = (b/a) * (x - h) + k
+      end
+    else
+      ass1 = 0
+      ass2 = 0
+    end
+  #+end_src
+
+  

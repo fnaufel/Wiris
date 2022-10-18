@@ -1,0 +1,10 @@
+
+* Fixar seed por aluno
+
+  #+begin_src python
+    # Fix seed per student
+    parameter user_id = 0
+    random_seed(user_id)
+
+  #+end_src
+  

@@ -1,0 +1,68 @@
+
+* Functions to handle and convert to strings
+
+  #+begin_src python
+    # Join list of strings
+    joinstrings(sl) := begin
+      rv = ""
+      for s in sl do
+        rv = rv | s
+      end
+      return rv
+    end
+
+    # Convert a 2D point to latex string
+    point2Dtolatex(p) := begin
+      return "\left( " | latex(p.1) | ", " | latex(p.2) | " \\right)"
+    end
+
+    # Convert a list of 2D points to latex string
+    point2Dlisttolatex(pl) := begin
+      local rv, i, rv2
+      if length(pl) = 0 do
+        rv = "\{ \}"
+      else
+        rv = {}
+        for p in pl do
+          rv = append(rv, point2Dtolatex(p))
+          rv = append(rv, ", ")
+        end
+        rv = replace(rv, length(rv), " \\right\}")
+        rv = prepend(rv, "\left\{ ")
+        rv = joinstrings(rv)
+      end
+      return rv
+    end
+
+    # Convert vector to latex
+    latexvector(v):=begin
+      local rv, i, rv2
+      rv = {}
+      for i in v do
+        rv = append(rv, latex(i))
+        rv = append(rv, ", ")
+      end
+      rv = replace(rv, length(rv), " \\right)")
+      rv2 = "\left( "
+      for i in rv do
+        rv2 = rv2 | i
+      end
+      return(rv2)
+    end
+
+    # Convert vector list to latex
+    latexvectorlist(vl):=begin
+      local rv, i, rv2
+      rv = {}
+      for i in vl do
+        rv = append(rv, latexvector(i))
+        rv = append(rv, ", ")
+      end
+      rv = replace(rv, length(rv), " \\right\}")
+      rv2 = "\left\{ "
+      for i in rv do
+        rv2 = rv2 | i
+      end
+      return(rv2)
+    end
+  #+end_src
