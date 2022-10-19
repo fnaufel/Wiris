@@ -1,6 +1,8 @@
 
-* STARTED Transformar tudo em funções
+* DONE Transformar tudo em funções
+  CLOSED: [2022-10-19 Wed 17:22]
   :LOGBOOK:
+  - State "DONE"       from "STARTED"    [2022-10-19 Wed 17:22]
   CLOCK: [2022-10-18 Tue 13:02]--[2022-10-18 Tue 13:50] =>  0:48
   - State "STARTED"    from "TODO"       [2022-10-18 Tue 13:02]
   :END:
@@ -597,54 +599,185 @@
 * Achar diretriz (só parábola, eixo vertical ou horizontal)
 
   #+begin_src python
-    if tipo = "parabola" then
-      foco = focus(curva)
-      vertice = vertex(curva)
-      p = distance(foco, vertice)
-      h = vertice.1
-      k = vertice.2
-      if h = foco.1 then # eixo vertical
-        lhs = y
-        if k < foco.2 then # concavidade p cima
-          rhs = k - p
-        else # concavidade p baixo
-          rhs = k + p
-        end
-      else  # eixo horizontal
-        lhs = x
-        if h < foco.1 then # concavidade p dir
-          rhs = h - p
-        else # concavidade p esq
-          rhs = k + p
-        end
+
+    # Fix seed per student
+    parameter user_id = 0
+    random_seed(user_id)
+
+    # Cônicas
+    eqsgeraisstr = {"2x^2+y^2-4x+5y-1", "x^2+2y^2-5x-5y+1", "-4x^2-2y^2-5x+y+1", "-x^2-y^2-4x+y+5", "-3x^2-5y^2+3x-2y", "5x^2+5y^2-5y", "-x^2-2y^2+4x+2y+5", "-2x^2-5y^2+y+4", "-x^2-y^2-4x-3y+4", "-2x^2-4y^2+3x+3y+1", "-5x^2-y^2-x-4y+2", "-5x^2-2y^2+4x+4y-1", "-4x^2-5y^2-2x+2y+2", "-3x^2-y^2-x+4y", "-5x^2-5y^2-5x+2", "x^2+5y^2-4x+y+1", "5x^2+2y^2-4x+4y-1", "-5x^2-y^2+5x-2y+5", "-x^2-3y^2+2x+5y+1", "-x^2-5y^2-2x-5y+3", "5x^2+3y^2-x+5y", "5x^2+y^2+3y-1", "3x^2+5y^2-4x+4y+2", "4x^2+2y^2-2x+y-5", "x^2+2y^2-x-5y+1", "2x^2+y^2+4x+4y-1", "2x^2+y^2+2x", "-4x^2+y^2-4x+5y+4", "-2x^2+2y^2+5x-4y+2", "5x^2-2y^2+4x-4y", "-3x^2+y^2-2x+4y+3", "-3x^2+2y^2-3x-3y-3", "-5x^2+3y^2+3x+3y-4", "-5x^2+3y^2-x+2y-5", "-4x^2+5y^2+x-y-1", "5x^2-3y^2-5x+4y+2", "5x^2-y^2+3x+5y-2", "-x^2+2y^2-5x-2y-2", "4x^2-4y^2-x-y+1", "2x^2-2y^2+3x+2", "-2x^2+4y^2+4x-5y-4", "5x^2-2y^2+2x+2y+2", "-x^2+y^2+3x-4", "-2x^2+4y^2-2x+3y+5", "-4x^2+5y^2+5x", "-3x^2+5y^2-4x+4y-2", "-x^2+4y^2+5x-4y-1", "-2x^2+2y^2-4x-3y-5", "-4x^2+2y^2+3x-3y-1", "-3x^2+3y^2-2x-4", "-5x^2+2y^2-2x-3y+2", "-2x^2+2y^2-3y+2", "-2x^2+5y^2-5x+3y+1", "5x^2-2y^2-x-5y-2", "-5y^2+2x+5", "-y^2-2x-2y+1", "4x^2-x+2y+1", "-3y^2+2x+3", "-x^2-4x-2y-4", "-3y^2+2x+5y-2", "y^2+5x+3y+1", "-4y^2-2x-2y", "4x^2-4x+y-5", "2y^2-3x+4y", "-2y^2+x+3y-1", "4x^2-x-3y+5", "-x^2+3x+3y-2", "3y^2-3x-4y", "3y^2+2x+y+1", "-2x^2-5x+2y-3", "-2y^2-3x+y+3", "-3x^2+2x-4y-3", "-4x^2-5x+2y+2", "-2x^2+3x+4y-5", "2x^2-x-y+3", "y^2-x-y-1", "x^2+5x+2y-3", "-5x^2+2y", "-5x^2-5x-2y+2", "-x^2+3x+5y-4"}
+
+    # Sortear equação string
+    total = 80 #length(eqsgeraisstr)
+    n = random(1..total)
+    eqgeralstr = eqsgeraisstr.n
+
+    # Converter para expressão
+    eqgeral = expression(eqgeralstr)
+
+    # Determinar tipo usando excentricidade
+    # Só vale para não-degenerada???
+    # Recebe uma CÔNICA e retorna string
+    achartipo(curva) := begin
+      local exc, tipo
+      exc = eccentricity(curva)
+      if exc = 0 then 
+        tipo = "circulo"
+      else_if exc = 1 then
+        tipo = "parabola"
+      else_if exc < 1 then
+        tipo = "elipse"
+      else
+        tipo = "hiperbole"
       end
-    else
-      lhs = 0
-      rhs = 0
+      return tipo
     end
+
+    achardiretriz(eqgeral) := begin
+      local tipo, curva, foco, vertice, p, h, k, lhs, rhs
+      curva = conic(eqgeral)
+      tipo = achartipo(curva)
+      if tipo = "parabola" then
+        foco = focus(curva)
+        vertice = vertex(curva)
+        p = distance(foco, vertice)
+        h = vertice.1
+        k = vertice.2
+        if h = foco.1 then # eixo vertical
+          lhs = y
+          if k < foco.2 then # concavidade p cima
+            rhs = k - p
+          else # concavidade p baixo
+            rhs = k + p
+          end
+        else  # eixo horizontal
+          lhs = x
+          if h < foco.1 then # concavidade p dir
+            rhs = h - p
+          else # concavidade p esq
+            rhs = k + p
+          end
+        end
+      else
+        lhs = 0
+        rhs = 0
+      end
+      return { lhs, rhs }
+    end
+
+    resposta = achardiretriz(eqgeral)
+    lhs = resposta.1
+    rhs = resposta.2
+
+    # TESTES
+
+    # testar(eqstr) := begin
+    #   local eqgeral, resposta
+    #   eqgeral = expression(eqstr)
+    #   resposta = achardiretriz(eqgeral)
+    #   return resposta
+    # end
+
+    # Elipse
+    #resposta = testar(eqsgeraisstr.1)
+
+    # Círculo
+    #resposta = testar(eqsgeraisstr.4)
+
+    # Hiperbola
+    #resposta = testar(eqsgeraisstr.28)
+
+    # Parábola
+    #resposta = testar(eqsgeraisstr.60)
   #+end_src
 
 * Achar assíntotas (só eixo vertical ou horizontal)
 
   #+begin_src python
-    if tipo = "hiperbole" then
-      a = semimajor_axis(curva)
-      b = semiminor_axis(curva)
-      centro = center(curva)
-      h = centro.1
-      k = centro.2
-      foco = focus(curva).1
-      if h = foco.1 then # eixo real vertical
-        ass1 = -(a/b) * (x - h) + k
-        ass2 = (a/b) * (x - h) + k
-      else  # eixo real horizontal
-        ass1 = -(b/a) * (x - h) + k
-        ass2 = (b/a) * (x - h) + k
+
+    # Fix seed per student
+    parameter user_id = 0
+    random_seed(user_id)
+
+    # Cônicas
+    eqsgeraisstr = {"2x^2+y^2-4x+5y-1", "x^2+2y^2-5x-5y+1", "-4x^2-2y^2-5x+y+1", "-x^2-y^2-4x+y+5", "-3x^2-5y^2+3x-2y", "5x^2+5y^2-5y", "-x^2-2y^2+4x+2y+5", "-2x^2-5y^2+y+4", "-x^2-y^2-4x-3y+4", "-2x^2-4y^2+3x+3y+1", "-5x^2-y^2-x-4y+2", "-5x^2-2y^2+4x+4y-1", "-4x^2-5y^2-2x+2y+2", "-3x^2-y^2-x+4y", "-5x^2-5y^2-5x+2", "x^2+5y^2-4x+y+1", "5x^2+2y^2-4x+4y-1", "-5x^2-y^2+5x-2y+5", "-x^2-3y^2+2x+5y+1", "-x^2-5y^2-2x-5y+3", "5x^2+3y^2-x+5y", "5x^2+y^2+3y-1", "3x^2+5y^2-4x+4y+2", "4x^2+2y^2-2x+y-5", "x^2+2y^2-x-5y+1", "2x^2+y^2+4x+4y-1", "2x^2+y^2+2x", "-4x^2+y^2-4x+5y+4", "-2x^2+2y^2+5x-4y+2", "5x^2-2y^2+4x-4y", "-3x^2+y^2-2x+4y+3", "-3x^2+2y^2-3x-3y-3", "-5x^2+3y^2+3x+3y-4", "-5x^2+3y^2-x+2y-5", "-4x^2+5y^2+x-y-1", "5x^2-3y^2-5x+4y+2", "5x^2-y^2+3x+5y-2", "-x^2+2y^2-5x-2y-2", "4x^2-4y^2-x-y+1", "2x^2-2y^2+3x+2", "-2x^2+4y^2+4x-5y-4", "5x^2-2y^2+2x+2y+2", "-x^2+y^2+3x-4", "-2x^2+4y^2-2x+3y+5", "-4x^2+5y^2+5x", "-3x^2+5y^2-4x+4y-2", "-x^2+4y^2+5x-4y-1", "-2x^2+2y^2-4x-3y-5", "-4x^2+2y^2+3x-3y-1", "-3x^2+3y^2-2x-4", "-5x^2+2y^2-2x-3y+2", "-2x^2+2y^2-3y+2", "-2x^2+5y^2-5x+3y+1", "5x^2-2y^2-x-5y-2", "-5y^2+2x+5", "-y^2-2x-2y+1", "4x^2-x+2y+1", "-3y^2+2x+3", "-x^2-4x-2y-4", "-3y^2+2x+5y-2", "y^2+5x+3y+1", "-4y^2-2x-2y", "4x^2-4x+y-5", "2y^2-3x+4y", "-2y^2+x+3y-1", "4x^2-x-3y+5", "-x^2+3x+3y-2", "3y^2-3x-4y", "3y^2+2x+y+1", "-2x^2-5x+2y-3", "-2y^2-3x+y+3", "-3x^2+2x-4y-3", "-4x^2-5x+2y+2", "-2x^2+3x+4y-5", "2x^2-x-y+3", "y^2-x-y-1", "x^2+5x+2y-3", "-5x^2+2y", "-5x^2-5x-2y+2", "-x^2+3x+5y-4"}
+
+    # Sortear equação string
+    total = 80 #length(eqsgeraisstr)
+    n = random(1..total)
+    eqgeralstr = eqsgeraisstr.n
+
+    # Converter para expressão
+    eqgeral = expression(eqgeralstr)
+
+    # Determinar tipo usando excentricidade
+    # Só vale para não-degenerada???
+    # Recebe uma CÔNICA e retorna string
+    achartipo(curva) := begin 
+      local exc, tipo
+      exc = eccentricity(curva)
+      if exc = 0 then 
+        tipo = "circulo"
+      else_if exc = 1 then
+        tipo = "parabola"
+      else_if exc < 1 then
+        tipo = "elipse"
+      else
+        tipo = "hiperbole"
       end
-    else
-      ass1 = 0
-      ass2 = 0
+      return tipo
     end
+
+    acharassintotas(eqgeral) := begin
+      local curva, tipo, a, b, h, k, centro, foco, ass1, ass2
+      curva = conic(eqgeral)
+      tipo = achartipo(curva)
+      if tipo = "hiperbole" then
+        a = semimajor_axis(curva)
+        b = semiminor_axis(curva)
+        centro = center(curva)
+        h = centro.1
+        k = centro.2
+        foco = focus(curva).1
+        if h = foco.1 then # eixo real vertical
+          ass1 = -(a/b) * (x - h) + k
+          ass2 = (a/b) * (x - h) + k
+        else  # eixo real horizontal
+          ass1 = -(b/a) * (x - h) + k
+          ass2 = (b/a) * (x - h) + k
+        end
+      else
+        ass1 = 0
+        ass2 = 0
+      end
+      return { ass1, ass2 }
+    end
+
+    resposta = acharassintotas(eqgeral)
+    ass1 = resposta.1
+    ass2 = resposta.2
+
+    # TESTES
+
+    # testar(eqstr) := begin
+    #   local eqgeral, resposta
+    #   eqgeral = expression(eqstr)
+    #   resposta = acharassintotas(eqgeral)
+    #   return resposta
+    # end
+
+    # Elipse
+    #resposta = testar(eqsgeraisstr.1)
+
+    # Círculo
+    #resposta = testar(eqsgeraisstr.4)
+
+    # Hiperbola
+    #resposta = testar(eqsgeraisstr.28)
+    #resposta = testar(eqsgeraisstr.31)
+
+    # Parábola
+    #resposta = testar(eqsgeraisstr.60)
   #+end_src
 
   
