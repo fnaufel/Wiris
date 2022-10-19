@@ -1,7 +1,7 @@
 
 * STARTED Transformar tudo em funções
   :LOGBOOK:
-  CLOCK: [2022-10-18 Tue 13:02]
+  CLOCK: [2022-10-18 Tue 13:02]--[2022-10-18 Tue 13:50] =>  0:48
   - State "STARTED"    from "TODO"       [2022-10-18 Tue 13:02]
   :END:
 
@@ -19,16 +19,35 @@
     # Converter para expressão
     eqgeral = expression(eqgeralstr)
 
-    # Converter para cônica
-    curva = conic(eqgeral)
+    # Determinar tipo usando excentricidade
+    # Só vale para não-degenerada???
+    # Recebe uma CÔNICA e retorna string
+    achartipo(curva) := begin
+      local exc, tipo
+      exc = eccentricity(curva)
+      if exc = 0 then 
+        tipo = "circulo"
+      else_if exc = 1 then
+        tipo = "parabola"
+      else_if exc < 1 then
+        tipo = "elipse"
+      else
+        tipo = "hiperbole"
+      end
+      return tipo
+    end
 
-    # Recebe uma CONICA e retorna lista de dois elementos: lhs e rhs
-    canonica(curva) := begin
-      local tipo, centro, h, k, r, foco, vertice, p, a, b, lhs, rhs
 
+    # Recebe uma EQUAÇÃO e retorna lista de dois elementos: lhs e rhs
+    canonica(eqgeral) := begin
+      local curva, tipo, centro, h, k, r, foco, vertice, p, a, b, lhs, rhs
+
+      curva = conic(eqgeral)
       tipo = achartipo(curva)
 
       if tipo = "circulo" then
+        # Para achar centro e raio, é preciso transformar em circunferência
+        curva = cfr(eqgeral)
         centro = center(curva)
         h = centro.1
         k = centro.2
@@ -86,9 +105,35 @@
 
     end
 
-    resposta = canonica(curva)
+    resposta = canonica(eqgeral)
     lhs = resposta.1
     rhs = resposta.2
+
+
+
+    # TESTES
+
+    # testar(eqstr) := begin
+    #   local eqgeral, resposta
+    #   eqgeral = expression(eqstr)
+    #   resposta = canonica(eqgeral)
+    #   return resposta
+    # end
+
+    # Elipse
+    #resposta = testar(eqsgeraisstr.1)
+
+    # Círculo
+    #resposta = testar(eqsgeraisstr.4)
+
+    # Hiperbola
+    #resposta = testar(eqsgeraisstr.28)
+
+    # Parábola
+    #resposta = testar(eqsgeraisstr.60)
+
+    # lhs = resposta.1
+    # rhs = resposta.2
   #+end_src
   
 * Determinar tipo (não-degenerada)
@@ -96,7 +141,7 @@
   #+begin_src python
     # Determinar tipo usando excentricidade
     # Só vale para não-degenerada???
-    # Recebe uma CONICA e retorna string
+    # Recebe uma CÔNICA e retorna string
     achartipo(curva) := begin
       local exc, tipo
       exc = eccentricity(curva)
