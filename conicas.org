@@ -799,7 +799,7 @@
     # Converter para expressão
     eqgeral = expression(eqgeralstr)
 
-    classificar(eqgeral) := begin
+    coefsxy(eqgeral) := begin
       local coefsx, coefsy, A, C, D, E, F
       coefsx = substitute(coefficients(eqgeral, x), y, 0)
       coefsy = substitute(coefficients(eqgeral, y), x, 0)
@@ -813,7 +813,7 @@
       end
 
       if length(coefsy) = 3 then
-        C = coefsx.3
+        C = coefsy.3
       else
         C = 0
       end
@@ -825,15 +825,86 @@
       end
 
       if length(coefsy) >= 2 then
-        E = coefsx.2
+        E = coefsy.2
       else
         E = 0
       end
 
       F = coefsx.1
 
-      # TODO: continue from here
+      return { A, C, D, E, F }
+
     end
+
+    classificar(eqgeral) := begin
+      local coefs, A, C, D, E, F, detM, tipo, rv, temp, forma, eqs, t
+      coefs = coefsxy(eqgeral)
+      A = coefs.1
+      C = coefs.2
+      D = coefs.3
+      E = coefs.4
+      F = coefs.5
+
+      detM = A*C
+      if detM = 0 then # parabola degenerada
+        tipo = "parabola"
+      else_if detM < 0 then # hiperbole degenerada
+        tipo = "hiperbole"
+      else # elipse degenerada (NÃO TRATADA AQUI)
+        tipo = "elipse"
+      end
+
+      forma = "?"
+      eqs = { }
+
+      if tipo = "parabola" then
+        temp = D^2 + E^2 - 4*F*(A + C)
+        if temp < 0 then
+          forma = "conjunto vazio"
+          eqs = { }
+        else_if temp = 0 then
+          forma = "coincidentes"
+          if C = 0 then
+            eqs = {{x, -D/(2*A)}, {x, -D/(2*A)}}
+          else
+            eqs = {{y, -E/(2*C)}, {y, -E/(2*C)}}
+          end
+        else # temp > 0
+          forma = "paralelas"
+          if C = 0 then
+            eqs = {{x, (-D + sqrt(D^2 - 4*A*F))/(2*A)}, {x, (-D - sqrt(D^2 - 4*A*F))/(2*A)}}
+            if eqs.1.2 > eqs.2.2 then # reta mais à esq antes
+              eqs = {{x, (-D - sqrt(D^2 - 4*A*F))/(2*A)}, {x, (-D + sqrt(D^2 - 4*A*F))/(2*A)}}
+            end
+          else
+            eqs = {{y, (-E + sqrt(E^2 - 4*C*F))/(2*C)}, {y, (-E - sqrt(E^2 - 4*C*F))/(2*C)}}
+            if eqs.1.2 > eqs.2.2 then # reta mais embaixo antes
+              eqs = {{y, (-E - sqrt(E^2 - 4*C*F))/(2*C)}, {y, (-E + sqrt(E^2 - 4*C*F))/(2*C)}}
+            end
+          end
+        end
+      end
+
+      if tipo = "hiperbole" then
+        forma = "concorrentes"
+        if C < 0 then # reta crescente antes
+          eqs = { { y, sqrt(absolute(A/C))*x + (A*E + D*sqrt(absolute(A*C))) / (2*A*-C) }, { y, -sqrt(absolute(A/C))*x + (A*E - D*sqrt(absolute(A*C))) / (2*A*-C) } }
+        else
+          eqs = { { y, sqrt(absolute(A/C))*x + (A*E - D*sqrt(absolute(A*C))) / (2*-A*C) }, { y, -sqrt(absolute(A/C))*x + (A*E + D*sqrt(absolute(A*C))) / (2*-A*C) } }
+        end
+      end
+
+      rv = { forma, eqs }
+    #  rv = { forma, { { e.1, to_decimal(e.2) } with e in eqs } }
+
+      return rv
+    end
+
+    # lista = { classificar(expression(eqsgeraisstr.i)) with i in 42..52 }
+    # lista = { classificar(expression(eqsgeraisstr.i)) with i in 1..10 }
+
+    # resposta = classificar(eqgeral)
+    # eq1.lhs = TODO
   #+end_src
 
 * Tipo de cônica degenerada
