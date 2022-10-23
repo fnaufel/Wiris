@@ -903,9 +903,11 @@
     # lista = { classificar(expression(eqsgeraisstr.i)) with i in 42..52 }
     # lista = { classificar(expression(eqsgeraisstr.i)) with i in 1..10 }
 
-    # resposta = classificar(eqgeral)
-    # eq1.lhs = TODO
+    resposta = classificar(eqgeral)
+    eq1lhs = resposta.2.1.1
+    eq1rhs = resposta.2.1.2
+    eq2lhs = resposta.2.2.1
+    eq2rhs = resposta.2.2.2
   #+end_src
 
-* Tipo de cônica degenerada
 
