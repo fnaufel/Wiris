@@ -336,89 +336,95 @@
     parameter user_id = 0
     random_seed(user_id)
 
+    # Temporariamente, por causa de bug
+    resposta = { }
+    respostastr = " "
+
     # Join list of strings
-    joinstrings(sl) := begin
-      rv = ""
-      for s in sl do
-        rv = rv | s
-      end
-      return rv
-    end
+    # joinstrings(sl) := begin
+    #   rv = ""
+    #   for s in sl do
+    #     rv = rv | s
+    #   end
+    #   return rv
+    # end
 
-    # Convert a 2D point to latex string
-    point2Dtolatex(p) := begin
-      return "\left( " | latex(p.1) | ", " | latex(p.2) | " \\right)"
-    end
+    # # Convert a 2D point to latex string
+    # point2Dtolatex(p) := begin
+    #   return "\left( " | latex(p.1) | ", " | latex(p.2) | " \\right)"
+    # end
 
 
-    # Convert a list of 2D points to latex string
-    point2Dlisttolatex(pl) := begin
-      local rv, i, rv2
-      if length(pl) = 0 do
-        rv = "\{ \}"
-      else
-        rv = {}
-        for p in pl do
-          rv = append(rv, point2Dtolatex(p))
-          rv = append(rv, ", ")
-        end
-        rv = replace(rv, length(rv), " \\right\}")
-        rv = prepend(rv, "\left\{ ")
-        rv = joinstrings(rv)
-      end
-      return rv
-    end
+    # # Convert a list of 2D points to latex string
+    # point2Dlisttolatex(pl) := begin
+    #   local rv, i, rv2
+    #   if length(pl) = 0 do
+    #     rv = "\{ \}"
+    #   else
+    #     rv = {}
+    #     for p in pl do
+    #       rv = append(rv, point2Dtolatex(p))
+    #       rv = append(rv, ", ")
+    #     end
+    #     rv = replace(rv, length(rv), " \\right\}")
+    #     rv = prepend(rv, "\left\{ ")
+    #     rv = joinstrings(rv)
+    #   end
+    #   return rv
+    # end
 
-    # Cônicas
-    eqsgeraisstr = {"2x^2+y^2-4x+5y-1", "x^2+2y^2-5x-5y+1", "-4x^2-2y^2-5x+y+1", "-x^2-y^2-4x+y+5", "-3x^2-5y^2+3x-2y", "5x^2+5y^2-5y", "-x^2-2y^2+4x+2y+5", "-2x^2-5y^2+y+4", "-x^2-y^2-4x-3y+4", "-2x^2-4y^2+3x+3y+1", "-5x^2-y^2-x-4y+2", "-5x^2-2y^2+4x+4y-1", "-4x^2-5y^2-2x+2y+2", "-3x^2-y^2-x+4y", "-5x^2-5y^2-5x+2", "x^2+5y^2-4x+y+1", "5x^2+2y^2-4x+4y-1", "-5x^2-y^2+5x-2y+5", "-x^2-3y^2+2x+5y+1", "-x^2-5y^2-2x-5y+3", "5x^2+3y^2-x+5y", "5x^2+y^2+3y-1", "3x^2+5y^2-4x+4y+2", "4x^2+2y^2-2x+y-5", "x^2+2y^2-x-5y+1", "2x^2+y^2+4x+4y-1", "2x^2+y^2+2x", "-4x^2+y^2-4x+5y+4", "-2x^2+2y^2+5x-4y+2", "5x^2-2y^2+4x-4y", "-3x^2+y^2-2x+4y+3", "-3x^2+2y^2-3x-3y-3", "-5x^2+3y^2+3x+3y-4", "-5x^2+3y^2-x+2y-5", "-4x^2+5y^2+x-y-1", "5x^2-3y^2-5x+4y+2", "5x^2-y^2+3x+5y-2", "-x^2+2y^2-5x-2y-2", "4x^2-4y^2-x-y+1", "2x^2-2y^2+3x+2", "-2x^2+4y^2+4x-5y-4", "5x^2-2y^2+2x+2y+2", "-x^2+y^2+3x-4", "-2x^2+4y^2-2x+3y+5", "-4x^2+5y^2+5x", "-3x^2+5y^2-4x+4y-2", "-x^2+4y^2+5x-4y-1", "-2x^2+2y^2-4x-3y-5", "-4x^2+2y^2+3x-3y-1", "-3x^2+3y^2-2x-4", "-5x^2+2y^2-2x-3y+2", "-2x^2+2y^2-3y+2", "-2x^2+5y^2-5x+3y+1", "5x^2-2y^2-x-5y-2", "-5y^2+2x+5", "-y^2-2x-2y+1", "4x^2-x+2y+1", "-3y^2+2x+3", "-x^2-4x-2y-4", "-3y^2+2x+5y-2", "y^2+5x+3y+1", "-4y^2-2x-2y", "4x^2-4x+y-5", "2y^2-3x+4y", "-2y^2+x+3y-1", "4x^2-x-3y+5", "-x^2+3x+3y-2", "3y^2-3x-4y", "3y^2+2x+y+1", "-2x^2-5x+2y-3", "-2y^2-3x+y+3", "-3x^2+2x-4y-3", "-4x^2-5x+2y+2", "-2x^2+3x+4y-5", "2x^2-x-y+3", "y^2-x-y-1", "x^2+5x+2y-3", "-5x^2+2y", "-5x^2-5x-2y+2", "-x^2+3x+5y-4"}
+    # # Cônicas
+    # eqsgeraisstr = {"2x^2+y^2-4x+5y-1", "x^2+2y^2-5x-5y+1", "-4x^2-2y^2-5x+y+1", "-x^2-y^2-4x+y+5", "-3x^2-5y^2+3x-2y", "5x^2+5y^2-5y", "-x^2-2y^2+4x+2y+5", "-2x^2-5y^2+y+4", "-x^2-y^2-4x-3y+4", "-2x^2-4y^2+3x+3y+1", "-5x^2-y^2-x-4y+2", "-5x^2-2y^2+4x+4y-1", "-4x^2-5y^2-2x+2y+2", "-3x^2-y^2-x+4y", "-5x^2-5y^2-5x+2", "x^2+5y^2-4x+y+1", "5x^2+2y^2-4x+4y-1", "-5x^2-y^2+5x-2y+5", "-x^2-3y^2+2x+5y+1", "-x^2-5y^2-2x-5y+3", "5x^2+3y^2-x+5y", "5x^2+y^2+3y-1", "3x^2+5y^2-4x+4y+2", "4x^2+2y^2-2x+y-5", "x^2+2y^2-x-5y+1", "2x^2+y^2+4x+4y-1", "2x^2+y^2+2x", "-4x^2+y^2-4x+5y+4", "-2x^2+2y^2+5x-4y+2", "5x^2-2y^2+4x-4y", "-3x^2+y^2-2x+4y+3", "-3x^2+2y^2-3x-3y-3", "-5x^2+3y^2+3x+3y-4", "-5x^2+3y^2-x+2y-5", "-4x^2+5y^2+x-y-1", "5x^2-3y^2-5x+4y+2", "5x^2-y^2+3x+5y-2", "-x^2+2y^2-5x-2y-2", "4x^2-4y^2-x-y+1", "2x^2-2y^2+3x+2", "-2x^2+4y^2+4x-5y-4", "5x^2-2y^2+2x+2y+2", "-x^2+y^2+3x-4", "-2x^2+4y^2-2x+3y+5", "-4x^2+5y^2+5x", "-3x^2+5y^2-4x+4y-2", "-x^2+4y^2+5x-4y-1", "-2x^2+2y^2-4x-3y-5", "-4x^2+2y^2+3x-3y-1", "-3x^2+3y^2-2x-4", "-5x^2+2y^2-2x-3y+2", "-2x^2+2y^2-3y+2", "-2x^2+5y^2-5x+3y+1", "5x^2-2y^2-x-5y-2", "-5y^2+2x+5", "-y^2-2x-2y+1", "4x^2-x+2y+1", "-3y^2+2x+3", "-x^2-4x-2y-4", "-3y^2+2x+5y-2", "y^2+5x+3y+1", "-4y^2-2x-2y", "4x^2-4x+y-5", "2y^2-3x+4y", "-2y^2+x+3y-1", "4x^2-x-3y+5", "-x^2+3x+3y-2", "3y^2-3x-4y", "3y^2+2x+y+1", "-2x^2-5x+2y-3", "-2y^2-3x+y+3", "-3x^2+2x-4y-3", "-4x^2-5x+2y+2", "-2x^2+3x+4y-5", "2x^2-x-y+3", "y^2-x-y-1", "x^2+5x+2y-3", "-5x^2+2y", "-5x^2-5x-2y+2", "-x^2+3x+5y-4"}
 
-    # Sortear equação string
-    total = 80 #length(eqsgeraisstr)
-    n = random(1..total)
-    eqgeralstr = eqsgeraisstr.n
+    # # Sortear equação string
+    # total = 80 #length(eqsgeraisstr)
+    # n = random(1..total)
+    # eqgeralstr = eqsgeraisstr.n
 
-    # Converter para expressão
-    eqgeral = expression(eqgeralstr)
+    # # Converter para expressão
+    # eqgeral = expression(eqgeralstr)
 
-    # Determinar tipo usando excentricidade
-    # Só vale para não-degenerada???
-    # Recebe uma CÔNICA e retorna string
-    achartipo(curva) := begin
-      local exc, tipo
-      exc = eccentricity(curva)
-      if exc = 0 then 
-        tipo = "circulo"
-      else_if exc = 1 then
-        tipo = "parabola"
-      else_if exc < 1 then
-        tipo = "elipse"
-      else
-        tipo = "hiperbole"
-      end
-      return tipo
-    end
+    # # Determinar tipo usando excentricidade
+    # # Só vale para não-degenerada???
+    # # Recebe uma CÔNICA e retorna string
+    # achartipo(curva) := begin
+    #   local exc, tipo
+    #   exc = eccentricity(curva)
+    #   if exc = 0 then 
+    #     tipo = "circulo"
+    #   else_if exc = 1 then
+    #     tipo = "parabola"
+    #   else_if exc < 1 then
+    #     tipo = "elipse"
+    #   else
+    #     tipo = "hiperbole"
+    #   end
+    #   return tipo
+    # end
 
-    # SOMENTE para cônicas com eixos paralelos a Ox ou Oy
-    acharvertices(eqgeral) := begin
-      local curva, tipo, resposta
-  
-      curva = conic(eqgeral)
-      tipo = achartipo(curva)
+    # # SOMENTE para cônicas com eixos paralelos a Ox ou Oy
+    # acharvertices(eqgeral) := begin
+    #   local curva, tipo, resposta
 
-      if tipo = "circulo" then
-        resposta = {}
-      else_if tipo = "parabola" then
-        resposta = { vertex(curva) }
-      else_if tipo = "elipse" then
-        resposta = { point(curva, angulo) with angulo in { 0, Pi_/2, Pi_, 3*Pi_/2 } }
-      else
-        resposta = { point(curva, angulo) with angulo in { 0, Pi_ } }
-      end
-      return resposta
-    end
+    #   curva = conic(eqgeral)
+    #   tipo = achartipo(curva)
 
-    resposta = acharvertices(eqgeral)
-    respostastr = point2Dlisttolatex(resposta)
+    #   if tipo = "circulo" then
+    #     resposta = {}
+    #   else_if tipo = "parabola" then
+    #     resposta = { vertex(curva) }
+    #   else_if tipo = "elipse" then
+    #     resposta = { }
+    #     # resposta = { point(curva, angulo) with angulo in { 0, Pi_/2, Pi_, 3*Pi_/2 } }
+    #   else
+    #     resposta = { }
+    #     # resposta = { point(curva, angulo) with angulo in { 0, Pi_ } }
+    #   end
+    #   return resposta
+    # end
+
+    # resposta = acharvertices(eqgeral)
+    # respostastr = point2Dlisttolatex(resposta)
 
     # TESTES
 
@@ -440,7 +446,23 @@
 
     # Parábola
     #resposta = testar(eqsgeraisstr.60)
+
+    #eqgeral = "-5x^2+3y^2-x+2y-5"
+    #curva = conic(expression(eqgeral))
   #+end_src
+
+*** Bug: travando nesta questão
+    :LOGBOOK:
+    CLOCK: [2022-10-28 Fri 17:45]--[2022-10-28 Fri 18:12] =>  0:27
+    :END:
+
+    + Equações:
+
+      + "-5x^2+3y^2-x+2y-5"
+
+    + Parece que chamar Point está causando o problema.
+
+    + Achar outro modo de achar os vértices.
 
 * Achar focos
 
